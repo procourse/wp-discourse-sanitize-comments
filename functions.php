@@ -63,10 +63,10 @@ add_filter( 'wpdc_comment_body', 'wpdc_custom_comment_body_truncate' );
 function wpdc_custom_comment_body_truncate( $content ) {
 	// Truncate the next
 	$new_content = truncate(
-		$content, 30,
+		$content, 1000,
 		array(
 			'html' => true,
-			'ending' => '<strong>... Continue reading in our forum {comment_url}</strong>')
+			'ending' => '<strong><a href="{comment_url}">... Continue reading in our forum</a></strong>')
 	);
 
 	return '<p>' . $new_content . '</p>';
