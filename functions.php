@@ -1,7 +1,4 @@
 <?php
-/**
- * Functionality to override onebox and extract links
- */
 add_filter( 'wpdc_comment_body', 'wpdc_custom_comment_body' );
 function wpdc_custom_comment_body( $content ) {
 	// Allows parsing misformed html. Save the previous value of libxml_use_internal_errors so that it can be restored.
@@ -11,6 +8,10 @@ function wpdc_custom_comment_body( $content ) {
 	$doc->loadHTML( mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ) );
 
 	$finder = new \DOMXPath( $doc );
+
+	/**
+	 * Functionality to override onebox and extract links
+	 */
 	$oneboxes = $finder->query( "//*[contains(@class, 'onebox')]");
 	foreach( $oneboxes as $onebox ) {
 		$onebox_header = $onebox->getElementsByTagName('header')->item(0);
@@ -25,6 +26,20 @@ function wpdc_custom_comment_body( $content ) {
 			$onebox -> appendChild($link_anchor);
 		}
 
+  }
+
+	/**
+	 * Functionality to remove images from replies
+	 */
+	$comments = $doc->getElementsByTagName('p');
+	foreach( $comments as $comment ) {
+		$images = $comment->getElementsByTagName('img');
+		foreach( $images as $image ) {
+				$img_link = $image->getAttribute('src');
+				$img_anchor = $doc->createElement('a', $img_link);
+				$img_parent=$image->parentNode;
+				$img_parent->replaceChild($img_anchor,$image);
+		}
   }
 
 	// Clear the libxml error buffer.
