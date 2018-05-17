@@ -13,14 +13,18 @@ function wpdc_custom_comment_body( $content ) {
 	$finder = new \DOMXPath( $doc );
 	$oneboxes = $finder->query( "//*[contains(@class, 'onebox')]");
 	foreach( $oneboxes as $onebox ) {
-			foreach( $onebox->getElementsByTagName('header') as $onebox_header ) {
-				$link=$onebox_header->getElementsByTagName('a')->item(0)->getAttribute('href');
-				$onebox_header->getElementsByTagName('a')->item(0)->nodeValue=$link;
-				$header_img=$onebox_header->getElementsByTagName('img')->item(0);
-				$onebox_header->removeChild( $header_img );
-				$onebox->parentNode->appendChild( $onebox_header );
+		$onebox_header = $onebox->getElementsByTagName('header')->item(0);
+		if (!is_null($onebox_header)) {
+			$link=$onebox_header->getElementsByTagName('a')->item(0)->getAttribute('href');
+			$onebox_header->getElementsByTagName('a')->item(0)->nodeValue=$link;
+			$link_anchor = $onebox_header->getElementsByTagName('a')->item(0);
+			$onebox_parent = $onebox->parentNode;
+			while ($onebox->hasChildNodes()) {
+    		$onebox->removeChild($onebox->firstChild);
   		}
-	    $onebox->parentNode->removeChild( $onebox );
+			$onebox -> appendChild($link_anchor);
+		}
+
   }
 
 	// Clear the libxml error buffer.
