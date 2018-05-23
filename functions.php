@@ -66,7 +66,7 @@ function wpdc_custom_comment_body_truncate( $content ) {
 		$content, 1000,
 		array(
 			'html' => true,
-			'ending' => '<strong><a href="{topic_url}">... Continue reading in our forum</a></strong>')
+			'ending' => '<strong><a href="{comment_url}">... Continue reading in our forum</a></strong>')
 	);
 
 	return '<p>' . $new_content . '</p>';
