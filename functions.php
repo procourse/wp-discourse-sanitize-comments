@@ -19,11 +19,10 @@ function wpdc_custom_comment_body( $content ) {
 			$link=$onebox_header->getElementsByTagName('a')->item(0)->getAttribute('href');
 			$onebox_header->getElementsByTagName('a')->item(0)->nodeValue=$link;
 			$link_anchor = $onebox_header->getElementsByTagName('a')->item(0);
+			$link_anchor->setAttribute('target','_blank');
+			$link_anchor->setAttribute('rel','nofollow');
 			$onebox_parent = $onebox->parentNode;
-			while ($onebox->hasChildNodes()) {
-    		$onebox->removeChild($onebox->firstChild);
-  		}
-			$onebox -> appendChild($link_anchor);
+			$onebox_parent ->replaceChild($link_anchor,$onebox);
 		}
 
   }
@@ -31,12 +30,13 @@ function wpdc_custom_comment_body( $content ) {
 	/**
 	 * Functionality to remove images from replies
 	 */
-	$comments = $doc->getElementsByTagName('p');
-	foreach( $comments as $comment ) {
-		$images = $comment->getElementsByTagName('img');
+	$paragraphs = $doc->getElementsByTagName('p');
+	foreach( $paragraphs as $paragraph ) {
+		$images = $paragraph->getElementsByTagName('img');
 		foreach( $images as $image ) {
 				$img_link = $image->getAttribute('src');
 				$img_anchor = $doc->createElement('a', $img_link);
+				$img_anchor->setAttribute('href',$img_link);
 				$img_parent=$image->parentNode;
 				$img_parent->replaceChild($img_anchor,$image);
 		}
@@ -54,6 +54,7 @@ function wpdc_custom_comment_body( $content ) {
 
 	return $parsed;
 }
+
 
 /*-----------------------------------------------------------------------------------*/
 /* Shortening content of Discourse replies below Wordpress posts
