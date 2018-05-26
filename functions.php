@@ -22,7 +22,10 @@ function wpdc_custom_comment_body( $content ) {
 			$link_anchor->setAttribute('target','_blank');
 			$link_anchor->setAttribute('rel','nofollow');
 			$onebox_parent = $onebox->parentNode;
-			$onebox_parent ->replaceChild($link_anchor,$onebox);
+			$onebox_p = $doc->createElement('p');
+			$onebox_p->appendChild($link_anchor);
+
+			$onebox_parent ->replaceChild($onebox_p,$onebox);
 		}
 
   }
@@ -37,6 +40,7 @@ function wpdc_custom_comment_body( $content ) {
 				$img_link = $image->getAttribute('src');
 				$img_anchor = $doc->createElement('a', $img_link);
 				$img_anchor->setAttribute('href',$img_link);
+				$img_anchor->setAttribute('target','_blank');
 				$img_parent=$image->parentNode;
 				$img_parent->replaceChild($img_anchor,$image);
 		}
