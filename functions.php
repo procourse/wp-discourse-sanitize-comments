@@ -41,10 +41,12 @@ function wpdc_custom_comment_body( $content ) {
 				$img_anchor = $doc->createElement('a', $img_link);
 				$img_anchor->setAttribute('href',$img_link);
 				$img_anchor->setAttribute('target','_blank');
+				$img_p = $doc->createElement('p');
+				$img_p->appendChild($img_anchor);
 				$img_parent=$image->parentNode;
-				$img_parent->replaceChild($img_anchor,$image);
+				$img_parent->replaceChild($img_p,$image);
 		}
-  }
+	}
 
 	// Clear the libxml error buffer.
 	libxml_clear_errors();
