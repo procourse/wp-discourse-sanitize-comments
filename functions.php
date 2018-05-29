@@ -36,7 +36,10 @@ function wpdc_custom_comment_body( $content ) {
 	$paragraphs = $doc->getElementsByTagName('p');
 	foreach( $paragraphs as $paragraph ) {
 		$images = $paragraph->getElementsByTagName('img');
-		foreach( $images as $image ) {
+		//Fix for the issue with several images in the same paragraph
+		$images = iterator_to_array($images);
+		foreach ($images as $image) {
+				if ($image->getAttribute('class') != "emoji") {
 				$img_link = $image->getAttribute('src');
 				$img_anchor = $doc->createElement('a', $img_link);
 				$img_anchor->setAttribute('href',$img_link);
@@ -45,6 +48,7 @@ function wpdc_custom_comment_body( $content ) {
 				$img_p->appendChild($img_anchor);
 				$img_parent=$image->parentNode;
 				$img_parent->replaceChild($img_p,$image);
+			}
 		}
 	}
 
@@ -188,5 +192,4 @@ function truncate($text, $length = 100, $options = array()) {
 	$truncate .= $ending;
     return $truncate;
 }
-
 ?>
