@@ -33,24 +33,21 @@ function wpdc_custom_comment_body( $content ) {
 	/**
 	 * Functionality to remove images from replies
 	 */
-	$paragraphs = $doc->getElementsByTagName('p');
-	foreach( $paragraphs as $paragraph ) {
-		$images = $paragraph->getElementsByTagName('img');
-		//Fix for the issue with several images in the same paragraph
-		$images = iterator_to_array($images);
-		foreach ($images as $image) {
-				if ($image->getAttribute('class') != "emoji") {
-				$img_link = $image->getAttribute('src');
-				$img_anchor = $doc->createElement('a', $img_link);
-				$img_anchor->setAttribute('href',$img_link);
-				$img_anchor->setAttribute('target','_blank');
-				$img_p = $doc->createElement('p');
-				$img_p->appendChild($img_anchor);
-				$img_parent=$image->parentNode;
-				$img_parent->replaceChild($img_p,$image);
-			}
-		}
-	}
+	$images = $doc->getElementsByTagName('img');
+ 	//Fix for the issue with several images in the same paragraph
+ 	$images = iterator_to_array($images);
+ 	foreach ($images as $image) {
+ 			if ($image->getAttribute('class') != "emoji") {
+ 				$img_link = $image->getAttribute('src');
+ 				$img_anchor = $doc->createElement('a', $img_link);
+ 				$img_anchor->setAttribute('href',$img_link);
+ 				$img_anchor->setAttribute('target','_blank');
+ 				$img_p = $doc->createElement('p');
+ 				$img_p->appendChild($img_anchor);
+ 				$img_parent=$image->parentNode;
+ 				$img_parent->replaceChild($img_p,$image);
+ 		}
+ 	}
 
 	// Clear the libxml error buffer.
 	libxml_clear_errors();
