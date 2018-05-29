@@ -13,7 +13,7 @@ function wpdc_custom_comment_body( $content ) {
 	 * Functionality to override onebox and extract links
 	 */
 	$oneboxes = $finder->query( "//*[contains(@class, 'onebox')]");
-	foreach( $lightboxes as $lightbox ) {
+	foreach( $oneboxes as $onebox ) {
 		$onebox_header = $onebox->getElementsByTagName('header')->item(0);
 		if (!is_null($onebox_header)) {
 			$link=$onebox_header->getElementsByTagName('a')->item(0)->getAttribute('href');
@@ -24,10 +24,12 @@ function wpdc_custom_comment_body( $content ) {
 			$onebox_parent = $onebox->parentNode;
 			$onebox_p = $doc->createElement('p');
 			$onebox_p->appendChild($link_anchor);
+
 			$onebox_parent ->replaceChild($onebox_p,$onebox);
 		}
 
-	}
+  }
+
 	/**
 	 * Functionality to override lightbox and extract links
 	 */
@@ -44,26 +46,29 @@ function wpdc_custom_comment_body( $content ) {
 			$lightbox_parent=$lightbox->parentNode;
 			$lightbox_parent->replaceChild($img_p,$lightbox);
 		}
-  }
+	}
 
 	/**
 	 * Functionality to remove images from replies
 	 */
-	$images = $doc->getElementsByTagName('img');
- 	//Fix for the issue with several images in the same paragraph
- 	$images = iterator_to_array($images);
- 	foreach ($images as $image) {
- 			if ($image->getAttribute('class') != "emoji") {
- 				$img_link = $image->getAttribute('src');
- 				$img_anchor = $doc->createElement('a', $img_link);
- 				$img_anchor->setAttribute('href',$img_link);
- 				$img_anchor->setAttribute('target','_blank');
- 				$img_p = $doc->createElement('p');
- 				$img_p->appendChild($img_anchor);
- 				$img_parent=$image->parentNode;
- 				$img_parent->replaceChild($img_p,$image);
- 		}
- 	}
+	$paragraphs = $doc->getElementsByTagName('p');
+	foreach( $paragraphs as $paragraph ) {
+		$images = $doc->getElementsByTagName('img');
+		//Fix for the issue with several images in the same paragraph
+		$images = iterator_to_array($images);
+		foreach ($images as $image) {
+				if ($image->getAttribute('class') != "emoji") {
+					$img_link = $image->getAttribute('src');
+					$img_anchor = $doc->createElement('a', $img_link);
+					$img_anchor->setAttribute('href',$img_link);
+					$img_anchor->setAttribute('target','_blank');
+					$img_p = $doc->createElement('p');
+					$img_p->appendChild($img_anchor);
+					$img_parent=$image->parentNode;
+					$img_parent->replaceChild($img_p,$image);
+			}
+		}
+	}
 
 	// Clear the libxml error buffer.
 	libxml_clear_errors();
