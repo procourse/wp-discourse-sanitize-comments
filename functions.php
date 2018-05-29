@@ -13,7 +13,7 @@ function wpdc_custom_comment_body( $content ) {
 	 * Functionality to override onebox and extract links
 	 */
 	$oneboxes = $finder->query( "//*[contains(@class, 'onebox')]");
-	foreach( $oneboxes as $onebox ) {
+	foreach( $lightboxes as $lightbox ) {
 		$onebox_header = $onebox->getElementsByTagName('header')->item(0);
 		if (!is_null($onebox_header)) {
 			$link=$onebox_header->getElementsByTagName('a')->item(0)->getAttribute('href');
@@ -24,10 +24,26 @@ function wpdc_custom_comment_body( $content ) {
 			$onebox_parent = $onebox->parentNode;
 			$onebox_p = $doc->createElement('p');
 			$onebox_p->appendChild($link_anchor);
-
 			$onebox_parent ->replaceChild($onebox_p,$onebox);
 		}
 
+	}
+	/**
+	 * Functionality to override lightbox and extract links
+	 */
+	$lightboxes = $finder->query( "//*[contains(@class, 'lightbox-wrapper')]");
+	$lightboxes = iterator_to_array($lightboxes);
+	foreach( $lightboxes as $lightbox ) {
+		if (!is_null($lightbox)) {
+			$img_link=$lightbox->getElementsByTagName('a')->item(0)->getAttribute('href');
+			$img_anchor = $doc->createElement('a', $img_link);
+			$img_anchor->setAttribute('href',$img_link);
+			$img_anchor->setAttribute('target','_blank');
+			$img_p = $doc->createElement('p');
+			$img_p->appendChild($img_anchor);
+			$lightbox_parent=$lightbox->parentNode;
+			$lightbox_parent->replaceChild($img_p,$lightbox);
+		}
   }
 
 	/**
