@@ -13,18 +13,20 @@ function wpdc_custom_comment_body( $content ) {
 	 * Functionality to override onebox and extract links
 	 */
 	$oneboxes = $finder->query( "//*[contains(@class, 'onebox')]");
+	$oneboxes = iterator_to_array($oneboxes);
 	foreach( $oneboxes as $onebox ) {
 		$onebox_header = $onebox->getElementsByTagName('header')->item(0);
+		$onebox->removeAttribute('class');
 		if (!is_null($onebox_header)) {
 			$link=$onebox_header->getElementsByTagName('a')->item(0)->getAttribute('href');
 			$onebox_header->getElementsByTagName('a')->item(0)->nodeValue=$link;
 			$link_anchor = $onebox_header->getElementsByTagName('a')->item(0);
 			$link_anchor->setAttribute('target','_blank');
+			$link_anchor->setAttribute('class','');
 			$link_anchor->setAttribute('rel','nofollow');
 			$onebox_parent = $onebox->parentNode;
 			$onebox_p = $doc->createElement('p');
 			$onebox_p->appendChild($link_anchor);
-
 			$onebox_parent ->replaceChild($onebox_p,$onebox);
 		}
 
@@ -41,6 +43,7 @@ function wpdc_custom_comment_body( $content ) {
 			$img_anchor = $doc->createElement('a', $img_link);
 			$img_anchor->setAttribute('href',$img_link);
 			$img_anchor->setAttribute('target','_blank');
+			$img_anchor->setAttribute('rel','nofollow');
 			$img_p = $doc->createElement('p');
 			$img_p->appendChild($img_anchor);
 			$lightbox_parent=$lightbox->parentNode;
@@ -57,11 +60,17 @@ function wpdc_custom_comment_body( $content ) {
 		//Fix for the issue with several images in the same paragraph
 		$images = iterator_to_array($images);
 		foreach ($images as $image) {
+			if ($image->nextSibling && $image->nextSibling->nodeName == 'br') {
+				$img_parent=$image->parentNode;
+				$img_parent->removeChild($image->nextSibling);
+			}
+
 				if ($image->getAttribute('class') != "emoji") {
 					$img_link = $image->getAttribute('src');
 					$img_anchor = $doc->createElement('a', $img_link);
 					$img_anchor->setAttribute('href',$img_link);
 					$img_anchor->setAttribute('target','_blank');
+					$img_anchor->setAttribute('rel','nofollow');
 					$img_p = $doc->createElement('p');
 					$img_p->appendChild($img_anchor);
 					$img_parent=$image->parentNode;
@@ -95,7 +104,7 @@ function wpdc_custom_comment_body_truncate( $content ) {
 		$content, 1000,
 		array(
 			'html' => true,
-			'ending' => '<strong><a href="{comment_url}">... Continue reading in our forum</a></strong>')
+			'ending' => '<strong><a href="{comment_url}" target=”_blank”>... Continue reading in our forum</a></strong>')
 	);
 
 	return '<p>' . $new_content . '</p>';
