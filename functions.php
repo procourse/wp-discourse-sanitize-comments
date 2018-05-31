@@ -219,4 +219,25 @@ function truncate($text, $length = 100, $options = array()) {
 	$truncate .= $ending;
     return $truncate;
 }
+
+/*-----------------------------------------------------------------------------------*/
+/* Add targer="_blank" to the link in the end of the discussion
+/*-----------------------------------------------------------------------------------*/
+
+add_filter( 'discourse_replies_html', 'add_target_blank' );
+function add_target_blank( $content ) {
+	$doc = new \DOMDocument( '1.0', 'utf-8' );
+	$doc->loadHTML( mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ) );
+
+	$finder = new \DOMXPath( $doc );
+	$reply_title = $finder->query( "//*[contains(@class, 'comment-reply-title')]");
+	$anchor = $reply_title->item(0)->getElementsByTagName('a')->item(0);
+	$anchor->setAttribute('target','_blank');
+	$parsed = $doc->saveHTML( $doc->documentElement );
+	$parsed = str_replace('%7B','{',$parsed);
+	$parsed = str_replace('%7D','}',$parsed);
+
+	return $parsed;
+
+}
 ?>
